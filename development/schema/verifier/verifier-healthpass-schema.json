@@ -1,0 +1,50 @@
+{
+    "id": "verifierlogin",
+    "name": "Verifier Credential for login",
+    "version": "0.7",
+    "schema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": ["name","customer", "customerId", "organization", "organizationId", "type", "configId", "configName"],
+        "properties": {
+            "customer": {
+                "type": "string",
+                "visible": true
+            },
+            "customerId": {
+                "type": "string",
+                "visible": false
+            },
+            "name": {
+                "type": "string",
+                "visible": true
+            },
+            "organization": {
+                "type": "string",
+                "visible": true
+            },
+            "organizationId": {
+                "type": "string",
+                "visible": false
+            },
+            "configName": {
+                "type": "string",
+                "visible": true
+            },
+            "configId": {
+                "type": "string",
+                "visible": false
+            },
+            "type": {
+                "type": "string",
+                "visible": false
+            },
+            "verifierType": {
+                "description": "Verifier types defined by customer.",
+                "type": "string",
+                "visible": true
+            }
+        }
+    }
+    
+}

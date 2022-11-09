@@ -1,0 +1,1834 @@
+{
+	"info": {
+		"_postman_id": "8f696d24-3e8c-4eaf-b0fc-4e5a7d171e28",
+		"name": "VerifierAdmin-Api-RegressionTests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service Up Copy",
+			"item": [
+				{
+					"name": "VerifierAdminAPI-Tests-skip",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI-Tests-skip\", function () {",
+									"    postman.setNextRequest(null);",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    let skipThisTests = pm.environment.get(\"SKIP_VERIFIER_ADMINAPI_TESTS\");",
+									"",
+									"    if (skipThisTests && (skipThisTests === 'true' || skipThisTests === 'yes')) {",
+									"        console.log('Skipping VerifierAdminAPI  tests');",
+									"        //postman.setNextRequest('Next one - skip check');",
+									"        return;",
+									"    } else {",
+									"        console.log('Run VerifierAdminAPI tests');",
+									"        postman.setNextRequest();",
+									"        return;",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/health",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "health check - set variables",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//let uuid = require('uuid');",
+									"",
+									"//let uuidTest = uuid.v4();",
+									"",
+									"const epochTime = Date.now();",
+									"const verNameSuffix = `-${epochTime}`;",
+									"pm.environment.set(\"VER_SUFFIX\", verNameSuffix);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - health check\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/health",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Verifier-admin-API",
+			"item": [
+				{
+					"name": "Login system admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - login sys admin\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"    let tokenStr = pm.response.json();",
+									"    if(tokenStr.access_token)",
+									"        pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{VER_SYSADMIN_EMAIL}}\",\n    \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - Add Customer\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    let custId = jsonData.customerId;",
+									"    pm.expect(custId).to.be.not.empty;",
+									"",
+									"    pm.environment.set(\"VER_CUST_ID\",  custId);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"RtestCustomer{{VER_SUFFIX}}\",\n    \"label\": \"CustomerOne Inc.\",\n    \"url\": \"http://cust.test\",\n    \"businessType\" : \"Retail\"        \n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get AllCustomers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get All Customers\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_CUST_ID = pm.environment.get(\"VER_CUST_ID\");",
+									"",
+									"    pm.expect(jsonData.customers.data).to.be.not.empty;",
+									"    let data = jsonData.customers.data;",
+									"    ",
+									"    let hasCustList = data.length > 0;",
+									"    pm.expect(hasCustList).to.be.true;",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "onboardUser  custAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - onboard custAdmin\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.data).to.be.not.empty;",
+									"    pm.expect(jsonData.data.customerId).to.be.not.empty;",
+									"    pm.expect(jsonData.data.role).to.equal('custadmin');",
+									"",
+									"    let userId = jsonData.data.userId;",
+									"    pm.expect(userId).to.be.not.empty;",
+									"",
+									"    pm.environment.set(\"VER_USER_ID\",  userId);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"customerId\": \"{{VER_CUST_ID}}\",\n            \"email\": \"regressiontest_custadmin@poc.com\",\n             \n            \"role\": \"custadmin\",\n            \"firstName\": \"RTest\",\n            \"lastName\": \"CustAdmin\",            \n            \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get OneCustomer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get Customer\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_CUST_ID = pm.environment.get(\"VER_CUST_ID\");",
+									"",
+									"    pm.expect(jsonData.customer).to.be.not.empty;",
+									"    let custId = jsonData.customer.customerId;",
+									"    pm.expect(custId).to.equal(VER_CUST_ID);",
+									"    pm.expect(jsonData.customer.label).to.equal('CustomerOne Inc.');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login cust1admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - login custadmin\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"    let tokenStr = pm.response.json();",
+									"    if(tokenStr.access_token)",
+									"        pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"regressiontest_custadmin@poc.com\",\n    \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Org for a Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - Add a Org\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    let custId = jsonData.customerId;",
+									"    pm.expect(custId).to.be.not.empty;",
+									"    let orgId = jsonData.orgId;",
+									"    pm.expect(orgId).to.be.not.empty;",
+									"",
+									"    pm.environment.set(\"VER_ORG_ID\",  orgId);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"RTestOrg{{VER_SUFFIX}}\",\n    \"label\": \"OrganizationOne Inc.\",\n    \"url\": \"http://org.test\",    \n    \"numberOfEmployees\": {\n        \"minValue\": \"10\",\n        \"maxValue\": \"100\"  \n    }\n     \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get AllOrgs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get All Orgs\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_CUST_ID = pm.environment.get(\"VER_CUST_ID\");",
+									"",
+									"    pm.expect(jsonData.orgs.data).to.be.not.empty;",
+									"    let data = jsonData.orgs.data;",
+									"    ",
+									"    let custId = data[0].customerId;",
+									"    pm.expect(custId).to.equal(VER_CUST_ID);",
+									"    pm.expect(data[0].label).to.equal('OrganizationOne Inc.');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get one Org for the customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get Org\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_CUST_ID = pm.environment.get(\"VER_CUST_ID\");",
+									"    let VER_ORG_ID = pm.environment.get(\"VER_ORG_ID\");",
+									"",
+									"    pm.expect(jsonData.org).to.be.not.empty;",
+									"    let custId = jsonData.org.customerId;",
+									"    pm.expect(custId).to.equal(VER_CUST_ID);",
+									"",
+									"    let orgId = jsonData.org.orgId;",
+									"    pm.expect(orgId).to.equal(VER_ORG_ID);",
+									"    pm.expect(jsonData.org.url).to.equal('http://org.test');",
+									"    pm.expect(jsonData.org.numberOfEmployees.minValue).to.equal('10');",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new Verifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - Add a Verifier\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    let custId = jsonData.customerId;",
+									"    pm.expect(custId).to.be.not.empty;",
+									"    let orgId = jsonData.orgId;",
+									"    pm.expect(orgId).to.be.not.empty;",
+									"",
+									"    pm.expect(jsonData.verifierId).to.be.not.empty;",
+									"    let verifierId = jsonData.verifierId; ",
+									"",
+									"    pm.environment.set(\"VER_VERIFIER_ID\",  verifierId);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Verifier1\",\n    \"label\": \"Gate 1\",\n    \"verifierType\": \"Food & Beverages\",\n    \"daysTillExpiry\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "onboardUser  orgAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - onboard custAdmin\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(jsonData.data).to.be.not.empty;",
+									"    pm.expect(jsonData.data.customerId).to.be.not.empty;",
+									"    pm.expect(jsonData.data.role).to.equal('orgadmin');",
+									"",
+									"    let userId = jsonData.data.userId;",
+									"    pm.expect(userId).to.be.not.empty;",
+									"",
+									"    pm.environment.set(\"VER_USER_ID2\",  userId);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"customerId\": \"{{VER_CUST_ID}}\",\n            \"orgId\": \"{{VER_ORG_ID}}\",\n            \"email\": \"regressiontest_orgadmin@poc.com\",\n             \n            \"role\": \"orgadmin\",\n            \"firstName\": \"RTest\",\n            \"lastName\": \"OrgAdmin\",            \n            \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list AllUsers for Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get AllUsers for Customer\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.expect(jsonData.length > 0).to.be.true;",
+									"",
+									"    pm.expect(jsonData[0].userName).to.be.not.empty;",
+									"    pm.expect(jsonData[0].id).to.be.not.empty;",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user?custId={{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							],
+							"query": [
+								{
+									"key": "custId",
+									"value": "{{VER_CUST_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list AllUsers for Org",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get AllUsers for Customer\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.expect(jsonData.length > 0).to.be.true;",
+									"",
+									"    pm.expect(jsonData[0].userName).to.be.not.empty;",
+									"    pm.expect(jsonData[0].id).to.be.not.empty;",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user?orgId={{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							],
+							"query": [
+								{
+									"key": "orgId",
+									"value": "{{VER_ORG_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get AllCustomers as custadmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - getAllCustomer should fail\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login org1admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - login orgadmin\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"    let tokenStr = pm.response.json();",
+									"    if(tokenStr.access_token)",
+									"        pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"regressiontest_orgadmin@poc.com\",\n    \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get OneVerifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get a Verifier\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_ORG_ID = pm.environment.get(\"VER_ORG_ID\");",
+									"    let VER_VERIFIER_ID = pm.environment.get(\"VER_VERIFIER_ID\");",
+									"",
+									"    pm.expect(jsonData.verifier).to.be.not.empty;",
+									"    let verifierId = jsonData.verifier.verifierId;",
+									"    pm.expect(verifierId).to.equal(VER_VERIFIER_ID);",
+									"",
+									"    let orgId = jsonData.verifier.orgId;",
+									"    pm.expect(orgId).to.equal(VER_ORG_ID);",
+									"",
+									"    pm.expect(jsonData.verifier.name).to.equal('Verifier1');",
+									"    pm.expect(jsonData.verifier.did).to.be.not.empty;",
+									"    pm.expect(jsonData.verifier.label).to.equal('Gate 1');",
+									"    pm.expect(jsonData.verifier.expirationDate).to.be.not.empty;",
+									"    pm.expect(jsonData.verifier.credential).to.be.not.empty;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getVerifierCredential JSON",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get a Verifier Credential\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.expect(jsonData.id).to.be.not.empty;",
+									"    pm.expect(jsonData.credentialSubject).to.be.not.empty;",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID}}/credential?type=json",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID}}",
+								"credential"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Verifier2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - Add Verifier2\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    let custId = jsonData.customerId;",
+									"    pm.expect(custId).to.be.not.empty;",
+									"    let orgId = jsonData.orgId;",
+									"    pm.expect(orgId).to.be.not.empty;",
+									"",
+									"    pm.expect(jsonData.verifierId).to.be.not.empty;",
+									"    let verifierId = jsonData.verifierId; ",
+									"",
+									"    pm.environment.set(\"VER_VERIFIER_ID2\",  verifierId);",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Verifier2\",\n    \"label\": \"Exit Scan\",\n    \"verifierType\": \"Food & Bev\",\n    \"daysTillExpiry\": 24\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get allVerifier for a Org",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get All Verifier\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_ORG_ID = pm.environment.get(\"VER_ORG_ID\");",
+									"    let VER_VERIFIER_ID2 = pm.environment.get(\"VER_VERIFIER_ID2\");",
+									"",
+									"    pm.expect(jsonData.verifiers).to.be.not.empty;",
+									"    pm.expect(jsonData.verifiers.data.length >=2 ).to.be.true;",
+									"    ",
+									"    let orgId = jsonData.verifiers.data[0].orgId;",
+									"    pm.expect(orgId).to.equal(VER_ORG_ID);",
+									"    pm.expect(jsonData.verifiers.data[0].did).to.be.not.empty;",
+									"    orgId = jsonData.verifiers.data[1].orgId;",
+									"    pm.expect(orgId).to.equal(VER_ORG_ID);",
+									"    pm.expect(jsonData.verifiers.data[1].did).to.be.not.empty;",
+									"",
+									"  ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "revoke Verifier2 Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - revoke Verifier2\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.expect(jsonData.message).to.contain('Successfully');",
+									"    ",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID2}}/revoke",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID2}}",
+								"revoke"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login cust1admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - login custadmin\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"    let tokenStr = pm.response.json();",
+									"    if(tokenStr.access_token)",
+									"        pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"regressiontest_custadmin@poc.com\",\n    \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "off-board User orgAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - offboard custAdmin\", function () {",
+									"    ",
+									"    pm.response.to.have.status(200);    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"email\": \"regressiontest_orgadmin@poc.com\"\n            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete one Org",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - delete Org\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get one Org on delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get Org on delete\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    let VER_CUST_ID = pm.environment.get(\"VER_CUST_ID\");",
+									"    let VER_ORG_ID = pm.environment.get(\"VER_ORG_ID\");",
+									"",
+									"    pm.expect(jsonData.org).to.be.empty;",
+									"        ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "off-board User custAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - offboard custAdmin\", function () {",
+									"    ",
+									"    pm.response.to.have.status(200);    ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"email\": \"regressiontest_custadmin@poc.com\"\n            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete a Customer as custadmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - delete Cust as offboarded custadmin\", function () {",
+									"    pm.response.to.have.status(401);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login system admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - login sys admin\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"    let tokenStr = pm.response.json();",
+									"    if(tokenStr.access_token)",
+									"        pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"onboardingsysadmin@poc.com\",\n    \"password\": \"{{VER_SYSADMIN_PASSWORD}}\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete a Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - delete Cust\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get OneCustomer On delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"VerifierAdminAPI - get Customer on delete\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"    pm.expect(jsonData.customer).to.be.empty;",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

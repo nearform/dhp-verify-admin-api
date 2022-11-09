@@ -1,0 +1,1871 @@
+{
+	"info": {
+		"_postman_id": "ae640f6f-e9ad-4e23-920b-a707045fef74",
+		"name": "VerifierAdmin-Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "verifier-admin-API",
+			"item": [
+				{
+					"name": "Login system admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"onboardingsysadmin@poc.com\",\n    \"password\": \"testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get AllCustomers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"if(res.customerId)",
+									"    pm.globals.set(\"VER_CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"CustomerOne\",\n    \"label\": \"CustomerOne Inc.\",\n    \"url\": \"http://cust.test\",\n    \"businessType\" : \"Retail\"        \n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get OneCustomer",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login cust1admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"cust1_custadmin@poc.com\",\n    \"password\": \"testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Org for a Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"if(res.orgId)",
+									"    pm.globals.set(\"VER_ORG_ID\",  res.orgId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"TestOrg1\",\n    \"label\": \"OrganizationOne Inc.\",\n    \"url\": \"http://org.test\",    \n    \"numberOfEmployees\": {\n        \"minValue\": \"10\",\n        \"maxValue\": \"100\"  \n    },\n    \"address\" : {\n        \"street\": \"123 main st\",\n        \"locality\": \"BOS\",\n        \"region\": \"NE\",\n        \"postalCode\": \"02421\",\n        \"country\": \"US\"\n    }    \n     \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get AllOrgs",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get one Org for the customer",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new Verifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"if(res.verifierId)",
+									"    pm.globals.set(\"VER_VERIFIER_ID\",  res.verifierId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Verifier1\",\n    \"label\": \"Gate 27\",\n    \"verifierType\": \"Food & Bev\",\n    \"daysTillExpiry\": 20\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get OneVerifier",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login org1admin user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"org1_orgadmin@poc.com\",\n    \"password\": \"testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/users/login",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Verifier2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"if(res.verifierId)",
+									"    pm.globals.set(\"VER_VERIFIER_ID\",  res.verifierId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Verifier2\",\n    \"label\": \"Exit Scan\",\n    \"verifierType\": \"Food & Bev\",\n    \"daysTillExpiry\": 24\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get allVerifier for a Org",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getVerifierCredential QRcode",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID}}/credential?type=qr",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID}}",
+								"credential"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "qr"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Revoke a Verifier",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}/verifier/{{VER_VERIFIER_ID}}/revoke",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}",
+								"verifier",
+								"{{VER_VERIFIER_ID}}",
+								"revoke"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete one Org",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}/org/{{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}",
+								"org",
+								"{{VER_ORG_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete a Customer",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{HP_API_AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/customer/{{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"customer",
+								"{{VER_CUST_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "user-admin",
+			"item": [
+				{
+					"name": "onboardUser  Sysadmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"USER_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {          \n            \"email\": \"onboardingsysadmin@poc.com\",             \n            \"role\": \"sysadmin\",\n            \"firstName\": \"System Verifier\",\n            \"lastName\": \"Admin\",            \n            \"password\": \"testing123\" \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "onboardUser  custAdmin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"USER_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n           \"customerId\": \"{{VER_CUST_ID}}\",\n            \"email\": \"cust1_custadmin@poc.com\",\n             \n            \"role\": \"custadmin\",\n            \"firstName\": \"Test Verifier\",\n            \"lastName\": \"CustAdmin\",\n            \n            \"password\": \"testing123\"            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Alluser for cust",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user?customerId={{VER_CUST_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "{{VER_CUST_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Alluser for Org",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user?orgId={{VER_ORG_ID}}",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							],
+							"query": [
+								{
+									"key": "orgId",
+									"value": "{{VER_ORG_ID}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "off-board user by email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"email\": \"verifierdevTest1@poc.com\"\n            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "off-board user by userid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"userId\": \"6029d657-39d3-4836-b848-18f6d89688c6\"\n            \n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "onboardUser test1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"CUST_ID\",  res.customerId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\n            \"customerId\": \"6e8c24d2-e5d2-46fb-869c-b5534246ce6c\",\n            \"role\": \"custadmin\",\n            \"firstName\": \"FirstTest1\",           \n            \"email\": \"verifierdevTest1@poc.com\",\n            \"lastName\": \"Smith\",\n            \"password\": \"testing123\"\n        }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{VERIFIER_ADMIN_API}}/admin/onboarding/user",
+							"host": [
+								"{{VERIFIER_ADMIN_API}}"
+							],
+							"path": [
+								"admin",
+								"onboarding",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "verifier-login-with-Credential",
+			"item": [
+				{
+					"name": "get verifier-login schema",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/schemas/{{VERIFIER_LOGIN_SCHEMA_ID}}",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"schemas",
+								"{{VERIFIER_LOGIN_SCHEMA_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create encoded LoginCredential",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Create Encoded Credential\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.response.to.have.status(200);",
+									"",
+									"    pm.environment.set(\"LoginCredbase64\", jsonData.payload);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schemaID\": \"{{VERIFIER_LOGIN_SCHEMA_ID}}\",\n    \"data\": {\n        \"customer\": \"Beta\",\n        \"organization\" : \"Boston Corp\",\n        \"name\": \"Entry Scan\",\n        \"verifierType\": \"Food Establishment\",\n        \"type\": \"VerifierCredential\",\n        \"organizationId\": \"cd3ca11e-2cec-4d27-8940-888c9697fb84\",\n        \"customerId\": \"230befb6-ac58-4a2b-9d64-ac6d1a7080fd\"\n    }\n\n}"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials?type=encoded",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "encoded"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login using LoginCredential",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"credential\": \"{{LoginCredbase64}}\"\n    \n}"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/users/loginWithCredential",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"users",
+								"loginWithCredential"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate QR code for a LoginCredential",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Test generate certificate response qr\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-hpass-issuer-id",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schemaID\": \"{{TEST_SCHEMA_ID}}\",\n    \"data\": {\n        \"customer\": \"Beta\",\n        \"organization\" : \"Boston Corp\",\n        \"name\": \"Entry Scan\",\n        \"verifierType\": \"Food Establishment\",\n        \"type\": \"VerifierCredential\",\n        \"organizationId\": \"cd3ca11e-2cec-4d27-8940-888c9697fb84\",\n        \"customerId\": \"230befb6-ac58-4a2b-9d64-ac6d1a7080fd\"\n    },\n    \"expirationDate\": \"2021-12-07T00:00:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials?output=qrcode",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "output",
+									"value": "qrcode"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "onboard login-credential Dev2",
+			"item": [
+				{
+					"name": "login standard user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"tester@poc.com\",\n    \"password\": \"testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/users/login",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get login schema",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/schemas/{{VERIFIER_LOGIN_SCHEMA_ID}}",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"schemas",
+								"{{VERIFIER_LOGIN_SCHEMA_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create schema Verifier credential",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"verifierlogin\",\n    \"name\": \"Verifier Credential for login\",\n    \"version\": \"0.1\",\n    \"schema\": {\n        \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n        \"type\": \"object\",\n        \"required\": [\"name\",\"customer\", \"organization\", \"type\"],\n        \"properties\": {\n            \"type\": {\n                \"type\": \"string\",\n                \"visible\": true\n            },        \n            \"customer\": {\n                \"type\": \"string\",\n                \"visible\": true\n            },        \n            \"organization\": {\n                \"type\": \"string\",\n                \"visible\": true\n            },\n            \"verifierType\": {\n                \"description\": \"The enum lists verifier types defined by org. This list may change.\",\n                \"type\": \"string\",\n                \"visible\": true\n            },\n            \"customerId\": {\n                \"type\": \"string\",\n                \"visible\": true\n            },\n            \"organizationId\": {\n                \"type\": \"string\",\n                \"visible\": true\n            },\n            \"name\": {\n                \"type\": \"string\",\n                \"visible\": true\n            }\t\t\n        }\n    }\n    \n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/schemas/",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"schemas",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Verifier credential - encoded",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"successfully create consent and retrieve data\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"message\");",
+									"    pm.expect(pm.response.text()).to.include(\"payload\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schemaID\": \"did:hpass:5c3caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f;id=verifierlogin;version=0.01\",\n    \"data\": {\n        \"customer\": \"Acme\",\n        \"organization\" : \"Dublin Corp\",\n        \"name\": \"Entry scan\",\n        \"verifierType\": \"Food Establishment\",\n        \"type\": \"VerifierCredential\",\n        \"organizationId\": \"78u9011e-2cec-4d27-8940-999u4907k677\",\n        \"customerId\": \"230befb6-ac58-4a2b-9d64-ac6d1a7080fd\"        \n    },\n    \"expirationDate\": \"2022-03-27T00:00:00Z\"\n    \n}\n"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials?type=encoded",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "encoded"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create sample Verifier credential QRcode",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"successfully create consent and retrieve data\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"message\");",
+									"    pm.expect(pm.response.text()).to.include(\"payload\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schemaID\": \"did:hpass:5c3caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f;id=verifierlogin;version=0.1\",\n    \"data\": {\n        \"customer\": \"Acme\",\n        \"organization\" : \"Dublin Corp\",\n        \"name\": \"Employee scan\",\n        \"verifierType\": \"Food Establishment\",\n        \"type\": \"VerifierCredential\",\n        \"organizationId\": \"78u9011e-2cec-4d27-8940-999u4907k677\",\n        \"customerId\": \"230befb6-ac58-4a2b-9d64-ac6d1a7080fd\"        \n    },\n    \"expirationDate\": \"2022-03-27T00:00:00Z\"\n    \n}\n"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials?output=qrcode",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "output",
+									"value": "qrcode"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create sample2 Verifier credential QRcode",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"successfully create consent and retrieve data\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"message\");",
+									"    pm.expect(pm.response.text()).to.include(\"payload\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"schemaID\": \"did:hpass:5c3caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f;id=verifierlogin;version=0.01\",\n    \"data\": {\n        \"customer\": \"Acme\",\n        \"organization\" : \"Boston Corp\",\n        \"name\": \"Gate 27\",\n        \"verifierType\": \"Food Establishment\",\n        \"type\": \"VerifierCredential\",\n        \"organizationId\": \"cd3ca11e-2cec-4d27-8940-888c9697fb84\",\n        \"customerId\": \"230befb6-ac58-4a2b-9d64-ac6d1a7080fd\"      \n    },\n    \"expirationDate\": \"2022-03-27T00:00:00Z\"\n    \n}\n"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials?output=qrcode",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials"
+							],
+							"query": [
+								{
+									"key": "output",
+									"value": "qrcode"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login as a verifier User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"HP_API_AUTH_TOKEN\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"token\");",
+									"});",
+									"",
+									"let tokenStr = pm.response.json();",
+									"//console.log(tokenStr);",
+									"",
+									"pm.globals.set(\"HP_API_AUTH_TOKEN\", \"Bearer \" + tokenStr.access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"verifier@poc.com\",\n    \"password\": \"testing123\"\n}"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/users/login",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test credential Verify",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"verify credential\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"message\");",
+									"    pm.expect(pm.response.text()).to.include(\"payload\");",
+									"    pm.response.to.have.status(200); ",
+									"    ",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(pm.response.json().payload.verification_status).to.eql(\"VALID\");",
+									"    pm.expect(pm.response.json().payload.valid).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "{{HP_API_AUTH_TOKEN}}"
+							},
+							{
+								"key": "{{ISSUER_ID_HEADER}}",
+								"type": "text",
+								"value": "{{ISSUER_ID}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"credential\": \"{{LoginCredbase64}}\"\n}"
+						},
+						"url": {
+							"raw": "{{HEALTHPASS_API}}/credentials/verify",
+							"host": [
+								"{{HEALTHPASS_API}}"
+							],
+							"path": [
+								"credentials",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

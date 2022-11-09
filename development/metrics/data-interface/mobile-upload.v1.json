@@ -1,0 +1,33 @@
+{
+    "data": {
+        "customerId": "56524238-83dd-46f9-9394-72cc31a7a094",
+        "orgId": "e0c415de-fece-458f-aa21-252ebd8f39e7",
+        "verDID": "did:hpass:5c3caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f#vc-1626b742-e90e-4a44-aa28-68218a7cfd06",        
+        "scans": [           
+            {
+                "datetime": "2021-06-04T13:00:00Z",                
+                "issuerName": "ABC Inc",
+                "issuerDID": "did:hpass:789caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f#vc-1626b742-e90e-4a44-aa28-68218a7cfd06",
+                "scanResult": "pass",
+                "credentialType":"vaccination",
+                "total": 10
+            },
+            {                
+                "datetime": "2021-06-04T13:00:00Z",
+                "issuerName": "DEF Inc",
+                "issuerDID": "did:hpass:123caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f#vc-1626b742-e90e-4a44-aa28-68218a7cfd07",
+                "scanResult": "pass",
+                "credentialType":"vaccination",
+                "total": 5
+            },
+            {                
+                "datetime": "2021-06-04T14:00:00Z",
+                "issuerName": "ABC Inc",
+                "issuerDID": "did:hpass:789caed09426bda7eb7ea51973b7d1eb87c3ec5b472163935ee05e757ecf10fe:f2fff85d420e498de8faa5ca567472c42e522a13f1c18e875a54ef0abdb76c9f#vc-1626b742-e90e-4a44-aa28-68218a7cfd06",
+                "scanResult": "pass",
+                "credentialType":"vaccination",
+                "total": 80
+            }
+        ]
+    }
+}
