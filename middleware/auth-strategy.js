@@ -12,6 +12,8 @@ const constants = require('../helpers/constants');
 
 // eslint-disable-next-line complexity
 const getAuthStrategy = (role) => {
+    return jwtAuth;
+  
     if (process.env.AUTH_STRATEGY === 'DEVELOPMENT') {
         return jwtAuth;
     }
