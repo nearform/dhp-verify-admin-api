@@ -32,6 +32,7 @@ const Logger = require('./config/logger');
 const logger = new Logger('app');
 const app = express();
 const port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+const contextRoot = process.env.CONTEXT_ROOT;
 let useHTTPS = false;
 let serverCert;
 let serverKey;
@@ -128,12 +129,10 @@ app.use(passport.initialize());
 
 
 // routes which should handle requests
-// TODO: add '/api/v1/' to routes
-app.use('/health', healthRoutes);
-app.use('/users', userRoutes);
-app.use('/admin', verifierAdminRoutes);
-app.use('/profile', profileRoutes);
-
+app.use(`${contextRoot}/health`, healthRoutes);
+app.use(`${contextRoot}/users`, userRoutes);
+app.use(`${contextRoot}/admin`, verifierAdminRoutes);
+app.use(`${contextRoot}/profile`, profileRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('No route found');
