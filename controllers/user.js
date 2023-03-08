@@ -96,16 +96,11 @@ exports.login = async (req, res, next) => {
         authObject =
             process.env.AUTH_STRATEGY === 'DEVELOPMENT' ? getJwtToken(email) : await helper.loginAppID(email, password);
 
-
-        // authObject.userId = 'dbu03'
-        // authObject.customerId = '6c108096-7225-4348-83a7-0b1b4d5c35e3'
-        // authObject.customerName = 'kayak inc'
-        // authObject.orgName = 'HealthPassOrg'
-        // authObject.orgId = 'b9796455-32b9-4233-a6de-e6db82594a04'
-
         authObject.userId = 'dbu03'
         authObject.customerId = '6c108096-7225-4348-83a7-0b1b4d5c35e3'
         authObject.customerName = 'kayak inc'
+        authObject.orgName = 'HealthPassOrg'
+        authObject.orgId = 'b9796455-32b9-4233-a6de-e6db82594a04'
 
         if (req.session)
             req.session.isAuthenticated = true;
