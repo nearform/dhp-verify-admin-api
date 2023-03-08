@@ -14,6 +14,7 @@ const custDao = require('../data-access/customer');
 const orgDao = require('../data-access/organization');
 const constants = require('../helpers/constants');
 const { logAndSendErrorResponse } = require('../helpers/utils');
+const crypto = require("crypto");
 
 const Logger = require('../config/logger');
 
@@ -46,7 +47,7 @@ const getJwtToken = (email) => {
         id_token: token,
         token_type: 'Bearer',
         expires_in: 28800,
-        scope: 'test',
+        scope: process.env.AUTH_USER_SCOPE,
     };
 };
 
@@ -95,7 +96,16 @@ exports.login = async (req, res, next) => {
         authObject =
             process.env.AUTH_STRATEGY === 'DEVELOPMENT' ? getJwtToken(email) : await helper.loginAppID(email, password);
 
-        // return additional information from AppID about the logged in user
+        authObject.userId = process.env.AUTH_USER_ID
+        authObject.customerId = process.env.AUTH_CUSTOMER_ID
+        authObject.customerName = process.env.AUTH_CUSTOMER_NAME
+        authObject.orgName = process.env.AUTH_ORG_NAME
+        authObject.orgId = process.env.AUTH_ORG_ID
+
+        if (req.session)
+            req.session.isAuthenticated = true;
+
+        /*         // return additional information from AppID about the logged in user
         const userInfo = await helper.getUserInfo(`Bearer ${authObject.access_token}`);
         // authObject.userInfo = userInfo;
         if (userInfo && userInfo.identities[0]) {
@@ -115,7 +125,7 @@ exports.login = async (req, res, next) => {
                 // resolve the org ID to the name of the org name
                 const retOrg = await orgDao.getOrganization(txID, dbUser.customerId, dbUser.orgId);
                 authObject.orgName = (retOrg) ? retOrg.label : "";
-            }
+            } 
 
             if (req.session)
                 req.session.isAuthenticated = true;
@@ -123,6 +133,7 @@ exports.login = async (req, res, next) => {
         else {
             logger.info("User not found in AppID");
         }
+        */
 
     } catch (error) {
         // only loginAppID() can throw an error
@@ -195,8 +206,12 @@ exports.onboardUser = async (req, res) => {
         await userDao.validateCustomerOrgIdForUser(txID, customerId, orgId, role);
 
         // 1. create an AppID user (based on email), Add user with custid/orgid attrib, assign User the Role
-        const createResponse = await helper.createUser(email, firstName, lastName, password, role, customerId, orgId);
-        const { uId, pId } = createResponse;
+
+        /*         const createResponse = await helper.createUser(email, firstName, lastName, password, role, customerId, orgId);
+        const { uId, pId } = createResponse; */
+
+        const uId = crypto.randomBytes(16).toString("hex");
+        const pId = crypto.randomBytes(16).toString("hex");
 
         logger.debug(`Appid: ${email} created with ID ${uId}, profileId ${pId}`);
 
