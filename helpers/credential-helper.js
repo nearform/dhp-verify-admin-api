@@ -22,13 +22,13 @@ const logger = new Logger('credential-helper');
 let vcIssuerId = '';
 let vcSchemaId = '';
 if (config.verifierCredentialGeneration) {
-    vcIssuerId = config.verifierCredentialGeneration.issuerId;
-
+    vcIssuerId = process.env.VC_ISSUER_ID;
+    vcSchemaId = process.env.VC_SCHEMA_ID;
 }
 const credType = constants.CREDENTIAL_TYPES.string;
 
 const credentialAPI = axios.create({
-    baseURL: `${config.credentialAPI.hostname}/api/v1`,
+    baseURL: `${process.env.CREDENTIALS_API}/api/v1`,
     timeout: config.timeout * 2,
     httpsAgent: tlsHelper.getAgentHeaderForSelfSignedCerts(),
     headers: {
@@ -119,7 +119,7 @@ exports.generateVerifierCredential = async (txID, token, verifier, expirationDat
     // call healthpass-api to generate profile credential
     const issuerID = vcIssuerId;
     const schemaID = vcSchemaId;
-    logger.debug(`Creating credential for ${verifier.verifierId} \
+    logger.debug(`Creating credential for ${credentialData.name} \
             by issuerId=${issuerID} with schemaId=${schemaID}`, txID);
     const profileCredential = await hpassHelper.createCredentialSafe(
         txID,

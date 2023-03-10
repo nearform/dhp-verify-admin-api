@@ -18,7 +18,7 @@ const Logger = require('../config/logger');
 const logger = new Logger('hpass-helper');
 
 const hpassAPI = axios.create({
-    baseURL: `${config.hpassAPI.hostname}`,
+    baseURL: `${process.env.HPASS_API}`,
     timeout: config.timeout,
     httpsAgent: tlsHelper.getAgentHeaderForSelfSignedCerts(),
     headers: {
@@ -41,6 +41,7 @@ const createCredential = async (txID, token, type, issuerID, schemaID, data, exp
     const credentialReqBody = {
         schemaID,
         data,
+        type: [type]
     };
 
     if (expirationDate) {

@@ -5,10 +5,10 @@
         "level": "debug"
     },
     "hpassAPI": {
-        "hostname": "https://sandbox1.wh-hpass.dev.acme.com/api/v1/hpass"
+        "hostname": "http://localhost:5006/api/v1/credential-issuer"
     },
     "credentialAPI": {
-        "hostname": "https://sandbox1.wh-hpass.dev.acme.com/api/v1/issuer"
+        "hostname": "http://localhost:5002/api/v1/generic-issuer-service"
     },
     "IAMServer": "https://iam.cloud.ibm.com",
     "dbuserBasedAuthorization" : true,
