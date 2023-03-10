@@ -32,7 +32,7 @@ const Logger = require('./config/logger');
 const logger = new Logger('app');
 const app = express();
 const port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-const contextRoot = process.env.CONTEXT_ROOT;
+const contextRoot = process.env.CONTEXT_ROOT || '';
 let useHTTPS = false;
 let serverCert;
 let serverKey;

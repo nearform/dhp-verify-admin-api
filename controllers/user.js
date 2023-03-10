@@ -8,13 +8,13 @@
 
 const jwt = require('jsonwebtoken');
 
+const crypto = require("crypto");
 const helper = require('../helpers/app-id-helper');
 const userDao = require('../data-access/dbuser');
 const custDao = require('../data-access/customer');
 const orgDao = require('../data-access/organization');
 const constants = require('../helpers/constants');
 const { logAndSendErrorResponse } = require('../helpers/utils');
-const crypto = require("crypto");
 
 const Logger = require('../config/logger');
 
@@ -22,6 +22,29 @@ const logger = new Logger('user-controller');
 
 // eslint-disable-next-line max-len
 const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+
+const loginData = {
+    "sysadmin@nearform.com": {
+        userId: 'dbu03',
+        customerId: '*',
+        orgId: '*',
+        scope: 'verifier.sysadmin'
+    },
+    "orgadmin@nearform.com": {
+        userId:'dbu02',
+        orgId: 'b9796455-32b9-4233-a6de-e6db82594a04',
+        orgName: 'OrganizationOne Inc.',
+        customerId: '6c108096-7225-4348-83a7-0b1b4d5c35e3',
+        customerName: 'Nearform Inc',
+        scope: 'verifier.orgadmin'
+    },
+    "custadmin@nearform.com": {
+        userId: 'dbu01',
+        customerId: '6c108096-7225-4348-83a7-0b1b4d5c35e3',
+        customerName: 'Nearform Inc',
+        scope: 'verifier.custadmin'
+    }
+}
 
 const getJwtToken = (email) => {
     logger.debug('Get local jwt token for login');
@@ -96,14 +119,14 @@ exports.login = async (req, res, next) => {
         authObject =
             process.env.AUTH_STRATEGY === 'DEVELOPMENT' ? getJwtToken(email) : await helper.loginAppID(email, password);
 
-        authObject.userId = process.env.AUTH_USER_ID
-        authObject.customerId = process.env.AUTH_CUSTOMER_ID
-        authObject.customerName = process.env.AUTH_CUSTOMER_NAME
-        authObject.orgName = process.env.AUTH_ORG_NAME
-        authObject.orgId = process.env.AUTH_ORG_ID
+        authObject.userId = loginData[email].userId || process.env.AUTH_USER_ID
+        authObject.customerId = loginData[email].customerId || process.env.AUTH_CUSTOMER_ID
+        authObject.customerName = loginData[email].customerName || process.env.AUTH_CUSTOMER_NAME
+        authObject.orgName = loginData[email].orgName || process.env.AUTH_ORG_NAME
+        authObject.orgId = loginData[email].orgId || process.env.AUTH_ORG_ID
+        authObject.scope = loginData[email].scope || process.env.AUTH_USER_SCOPE
 
-        if (req.session)
-            req.session.isAuthenticated = true;
+        if (req.session) req.session.isAuthenticated = true;
 
         /*         // return additional information from AppID about the logged in user
         const userInfo = await helper.getUserInfo(`Bearer ${authObject.access_token}`);
