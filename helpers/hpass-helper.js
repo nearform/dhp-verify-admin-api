@@ -67,7 +67,7 @@ const createCredential = async (txID, token, type, issuerID, schemaID, data, exp
 const revokeCredential = async (txID, token, credentialID, reason) => {
     const issuerID = credHelper.credentialIssuerID;
     logger.debug(`revokeCredential() using issuer ${issuerID}`, txID);
-    const path = '/credentials/revoke';
+    const path = '/credentials/revoked';
 
     const credentialReqBody = {
         credentialID,
